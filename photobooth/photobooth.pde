@@ -39,6 +39,10 @@ String message = originalMessage;
 boolean snapping = false;
 int startedSnappingTime = 0;
 
+boolean sketchFullScreen() {
+  return true;
+}
+
 void setup()
 {
   size(width,height,P3D);

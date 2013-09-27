@@ -4,6 +4,7 @@ var async   = require('async')
 var publish = require('./publish');
 
 var queue = async.queue(publishAndRemove, 1);
+queue.drain = onDrain;
 var processing = [];
 
 watch.createMonitor(__dirname + '/../photobooth', function(monitor) {
@@ -24,7 +25,15 @@ function onCreated(f) {
 function publishAndRemove(f, cb) {
 	publish(f, published);
 
-	function published() {
+	function published(err) {
+		if (err) {
+			console.error(err);
+			setTimeout(function() {
+				queue.push(f);
+			}, 10000);
+
+			return cb();
+		}
 		fs.unlink(f, unlinked);
 	}
 
@@ -33,4 +42,8 @@ function publishAndRemove(f, cb) {
 		else console.log('removed', f)
 		cb();
 	}
+}
+
+function onDrain() {
+	console.log('all done for now');
 }
