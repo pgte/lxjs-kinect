@@ -27,7 +27,7 @@ function publishAndRemove(f, cb) {
 
 	function published(err) {
 		if (err) {
-			console.error(err);
+			throw err;
 			setTimeout(function() {
 				queue.push(f);
 			}, 10000);
@@ -38,12 +38,23 @@ function publishAndRemove(f, cb) {
 	}
 
 	function unlinked(err) {
-		if (err) console.error(err);
-		else console.log('removed', f)
-		cb();
+		if (!err) console.log('removed', f)
+		cb(err);
 	}
 }
 
 function onDrain() {
 	console.log('all done for now');
 }
+
+console.log('uploader starting');
+
+process.once('uncaughtException', function(err) {
+  console.error(err);
+  process.exit(1);
+});
+
+process.on('SIGINT', function() {
+	console.error('interrupted');
+	process.exit(0);
+});

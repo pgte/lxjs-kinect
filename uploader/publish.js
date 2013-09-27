@@ -21,11 +21,25 @@ function publish(f, cb) {
 	}, config.timeout_ms);
 
 	var s = cloudup.stream(config.stream);
-	s.on('error')
-	s.file(f).save(saved);
+	s.on('error', onError);
+	s.file(f);
+	s.save(saved);
 
 	function saved(err) {
 		clearTimeout(timeout);
-		cb(err);
+		callback(err);
+	}
+
+	function onError(err) {
+		console.error(err);
+		callback(err);
+	}
+
+	var calledback = false;
+	function callback() {
+		if (! calledback) {
+			calledback = true;
+			cb.apply(null, arguments);
+		}
 	}
 }

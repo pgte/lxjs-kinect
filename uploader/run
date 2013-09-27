@@ -1,0 +1,14 @@
+#!/bin/bash
+
+RETVAL=1
+
+while :
+	do
+    if [ $RETVAL -gt  0 ]
+    	then
+        node .
+        RETVAL=$?
+      else
+    	  break
+    fi
+done
