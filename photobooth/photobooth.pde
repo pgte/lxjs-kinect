@@ -21,9 +21,23 @@ float        rotY = radians(0);
 
 /// box
 
-int boxSize = 150;
+int boxSize = 100;
 float halfBoxSize = boxSize / 2;
 PVector boxCenter = new PVector(200, 0, 600);
+// 0x0474ba
+int r = 0x04;
+int g = 0x74;
+int b = 0xba;
+
+/// text
+
+PFont f = createFont("Arial",16,true);
+String originalMessage = "LXJS\n2013"; 
+String message = originalMessage;
+
+/// snapping
+boolean snapping = false;
+int startedSnappingTime = 0;
 
 void setup()
 {
@@ -74,7 +88,7 @@ void draw()
 
   PImage  rgbImage = context.rgbImage();
   int[]   depthMap = context.depthMap();
-  int     steps   = 3;  // to speed up the drawing, draw every third point
+  int     steps   = 5;  // to speed up the drawing, draw every third point
   int     index;
   PVector realWorldPoint;
   color   pixelColor;
@@ -122,12 +136,24 @@ void draw()
      }
    }
  }
+ 
+ if (snapping || depthPointsInBox >= 200) {
+   snapping();
+ } 
 
- float boxAlpha = map(depthPointsInBox, 0, 1000, 0, 255);
+ float boxAlpha = map(depthPointsInBox, 0, 200, 0, 255);
  translate(boxCenter.x, boxCenter.y, boxCenter.z);
- fill(255, 0, 0, boxAlpha);
- stroke(255,0,0);
+ fill(r, g, b, boxAlpha);
+ stroke(r, g, b);
  box(boxSize);
+ 
+ /// font
+ 
+ translate(0,0,0);
+ textFont(f,36);
+ fill(255);
+ rotateX(rotX);
+ text(message, -45, -10, halfBoxSize + 10);
 
   // draw the kinect cam
   //context.drawCamFrustum();
@@ -139,7 +165,8 @@ void keyPressed()
   switch(key)
   {
   case ' ':
-    context.setMirror(!context.mirror());
+    snap();
+    //context.setMirror(!context.mirror());
     break;
   }
 
@@ -169,4 +196,41 @@ void keyPressed()
       rotX -= 0.1f;
     break;
   }
+}
+
+void snapping() {
+  int now = millis();
+  /// too soon?
+  if (! snapping && startedSnappingTime > 0) {
+    int diff = (now - startedSnappingTime) / 1000; 
+    if (diff > 10)
+      startedSnappingTime = 0;
+    else return;
+  }
+  
+  // we're snapping!!!
+  snapping = true;
+  if (startedSnappingTime == 0) {
+    startedSnappingTime = millis();
+  }
+  int diff = (now - startedSnappingTime) / 1000;
+  if (diff < 1) {
+    message = "snapping\npic";
+  } else if (diff < 5) {
+    message = (new Integer(5 - diff)).toString();
+  } else if (diff < 6) {
+    message = "smile!";
+  } else if (diff < 7) {
+    snap();
+  } else {
+    message = originalMessage;
+    snapping = false;
+  }
+}
+
+void snap() {
+  Date d = new Date();
+  long current = d.getTime()/1000;
+  String filename = "photo-" + current + ".png"; 
+  save(filename);
 }
