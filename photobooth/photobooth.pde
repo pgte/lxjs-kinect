@@ -141,9 +141,6 @@ void draw()
    }
  }
  
- if (snapping || depthPointsInBox >= 200) {
-   snapping();
- } 
 
  float boxAlpha = map(depthPointsInBox, 0, 200, 0, 255);
  translate(boxCenter.x, boxCenter.y, boxCenter.z);
@@ -159,6 +156,9 @@ void draw()
  rotateX(rotX);
  text(message, -45, -10, halfBoxSize + 10);
 
+ if (snapping || depthPointsInBox >= 200) {
+   snapping();
+ } 
   // draw the kinect cam
   //context.drawCamFrustum();
 }
@@ -221,13 +221,14 @@ void snapping() {
   if (diff < 1) {
     message = "snapping\npic";
   } else if (diff < 5) {
-    message = (new Integer(5 - diff)).toString();
+    message = (new Integer(4 - diff)).toString();
   } else if (diff < 6) {
     message = "smile!";
   } else if (diff < 7) {
+    message = originalMessage;
+  } else if (diff < 8) {
     snap();
   } else {
-    message = originalMessage;
     snapping = false;
   }
 }

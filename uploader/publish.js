@@ -20,7 +20,9 @@ function publish(f, cb) {
 		cb(new Error('uploading ' + f + ' timed out'));
 	}, config.timeout_ms);
 
-	cloudup.stream(config.stream).file(f).save(saved);
+	var s = cloudup.stream(config.stream);
+	s.on('error')
+	s.file(f).save(saved);
 
 	function saved(err) {
 		clearTimeout(timeout);
