@@ -17,7 +17,7 @@ int          height = 768;
 float        zoomF =0.6f;
 float        rotX = radians(180);  // by default rotate the hole scene 180deg around the x-axis,
                                    // the data from openni comes upside down
-float        rotY = radians(0);
+float        rotY = radians(-20);
 
 /// box
 
