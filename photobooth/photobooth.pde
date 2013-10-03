@@ -17,7 +17,7 @@ int          height = 768;
 float        zoomF =0.6f;
 float        rotX = radians(180);  // by default rotate the hole scene 180deg around the x-axis,
                                    // the data from openni comes upside down
-float        rotY = radians(-20);
+float        rotY = radians(-10);
 
 /// box
 
@@ -29,6 +29,10 @@ int r = 0x04;
 int g = 0x74;
 int b = 0xba;
 
+/// steps
+int steps   = 3;  // to speed up the drawing, draw every third point
+
+
 /// text
 
 PFont f = createFont("Arial",16,true);
@@ -38,6 +42,11 @@ String message = originalMessage;
 /// snapping
 boolean snapping = false;
 int startedSnappingTime = 0;
+
+/// sponsor
+String sponsorImagePath = "/Users/pedroteixeira/projects/lxjs-kinect/photobooth/assets/clubjudge.png"; 
+PImage sponsorImage = loadImage(sponsorImagePath);
+
 
 boolean sketchFullScreen() {
   return true;
@@ -92,7 +101,6 @@ void draw()
 
   PImage  rgbImage = context.rgbImage();
   int[]   depthMap = context.depthMap();
-  int     steps   = 5;  // to speed up the drawing, draw every third point
   int     index;
   PVector realWorldPoint;
   color   pixelColor;
@@ -155,6 +163,9 @@ void draw()
  fill(255);
  rotateX(rotX);
  text(message, -45, -10, halfBoxSize + 10);
+ 
+ /// sponsor image
+ image(sponsorImage, -200, 100);
 
  if (snapping || depthPointsInBox >= 200) {
    snapping();
